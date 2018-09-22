@@ -23,4 +23,9 @@ data_seizures_arrests %>%
          county_name = str_c(str_to_title(county_name), " County"),
          county_name = str_replace(county_name, "Mckean", "McKean")) -> df_seizures_arrests
 
+read_csv("data/Successful_Naloxone_Reversals_by_Law_Enforcement_Years_2014_-_June_2018_County_Drug_and_Alcohol_Program.csv") %>% 
+  clean_names() -> data_reversals
 
+data_reversals %>% 
+  mutate(county_name = str_c(str_to_title(county_name), " County"),
+         county_name = str_replace(county_name, "Mckean", "McKean")) -> df_reversals
