@@ -1,0 +1,70 @@
+---
+title: "pa county OD pca"
+author: "Conor Tompkins"
+date: "September 22, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,
+                      message = FALSE,
+                      warning = FALSE)
+```
+
+```{r}
+library(tidyverse)
+library(tidycensus)
+library(janitor)
+library(viridis)
+
+options(tigris_use_cache = TRUE)
+
+theme_set(theme_minimal())
+my_census_key <- "a16f3636406d2b544871e2ae49bb318c3ddcacba"
+census_api_key(my_census_key)
+
+census_vars <- load_variables(2010, "sf1", cache = TRUE)
+
+source("scripts/data_cleaning.R")
+```
+
+```{r}
+df_dispensation %>% 
+  filter(county_name != "Pennsylvania County") %>% 
+  distinct(county_name) %>% 
+  mutate(year = 2017) -> df_counties
+```
+
+```{r}
+df_dispensation %>% 
+  select(county_name, year, quarter, time_measure, type_of_drug_class, type_of_rate_or_count_measure, dispensation_count = rate_or_count) %>% 
+  filter(type_of_rate_or_count_measure == "Number of Dispensations",
+         type_of_drug_class == "Opioids (All Schedules)",
+         time_measure == "Quarterly Counts",
+         year == 2017) %>% 
+  group_by(county_name, year) %>% 
+  summarize(dispensation_count = sum(dispensation_count)) -> df_dispensation_clean
+```
+
+```{r}
+df_seizures_arrests %>% 
+  select(county_name, year, qtr, unit_used, drug, drug_quantity, incident_count, arrests) %>% 
+  filter(year == 2017) %>% 
+  spread(drug, drug_quantity) %>% 
+  replace_na(list(Fentanyl = 0,
+                      Heroin = 0,
+                      Opium = 0)) %>% 
+  group_by(county_name, year, unit_used) %>% 
+  summarize_at(vars(incident_count:Opium), sum) -> df_seizures_arrests_clean
+```
+
+```{r}
+df_counties %>% 
+  left_join(df_dispensation_clean) %>% 
+  left_join(df_seizures_arrests_clean) %>% 
+  View()
+```
+
+
+
+

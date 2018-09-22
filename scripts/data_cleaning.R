@@ -10,7 +10,8 @@ read_csv("data/Opioid_Dispensation_Data_County_Quarter_3_2016_-_Current_Health.c
 data_dispensation %>% 
   mutate(county_name = str_c(str_to_title(county_name), " County"),
          county_name = str_replace(county_name, "Mckean", "McKean"),
-         time_period = factor(time_period)) -> df_dispensation
+         time_period = factor(time_period),
+         quarter = str_sub(time_period, 6, 7)) -> df_dispensation
 
 levels(df_dispensation$time_period) -> time_period_levels
 
