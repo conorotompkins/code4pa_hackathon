@@ -75,10 +75,22 @@ df_geo_county %>%
 ```{r}
 df_geo_county %>% 
   left_join(df_seizures_arrests, by = c("NAME" = "county_name")) %>% 
-  filter(time_period == "2017 Q3",
-         type_of_drug_class == "Opioids (All Schedules)",
-         type_of_rate_or_count_measure == "Dispensations per 1,000 Population") %>% 
-  ggplot(aes(fill = rate_or_count)) +
+  group_by(NAME) %>% 
+  summarize(drug_quantity = sum(drug_quantity)) %>% 
+  arrange(desc(drug_quantity)) %>% 
+  ggplot(aes(fill = drug_quantity)) +
   geom_sf() +
   scale_fill_viridis_c()
 ```
+
+```{r}
+df_geo_county %>% 
+  left_join(df_reversals, by = c("NAME" = "county_name")) %>% 
+  filter(!str_detect(NAME, "Commonwealth")) %>% 
+  mutate(reversals_per_capita = (number_of_successful_reversals / estimate) * 1000) %>% 
+  ggplot(aes(fill = reversals_per_capita, linetype = police_coverage), size = 3) +
+  geom_sf() +
+  scale_fill_viridis_c() +
+  facet_wrap(~year)
+```
+
