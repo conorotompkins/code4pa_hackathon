@@ -171,17 +171,69 @@ df_geo_county %>%
   left_join(df_plot) %>% 
   gather(pc_name, pc_value, -c(GEOID:county_name, label, geometry)) %>% 
   filter(pc_name == ".fittedPC1") %>% 
-  arrange(desc(pc_value)) %>% 
-  mutate(county_name = as.factor(county_name)) %>% 
+  mutate(county_name = str_replace(county_name, " County", "")) %>% 
   ggplot(aes(reorder(county_name, desc(pc_value)), pc_value, fill = pc_value)) +
   geom_col() +
   coord_flip() +
   scale_fill_viridis_c() +
   theme(panel.grid.minor = element_blank())
+```
+
+```{r}
+df_geo_county %>% 
+  left_join(df_plot) %>% 
+  gather(pc_name, pc_value, -c(GEOID:county_name, label, geometry)) %>% 
+  filter(pc_name == ".fittedPC3") %>% 
+  mutate(county_name = str_replace(county_name, " County", "")) %>% 
+  ggplot(aes(reorder(county_name, desc(pc_value)), pc_value, fill = pc_value)) +
+  geom_col() +
+  coord_flip() +
+  scale_fill_viridis_c() +
+  theme(panel.grid.minor = element_blank())
+```
+
+```{r}
+df_test %>% 
+  mutate_at(vars(dispensation_count:Opium), scale) %>% 
+  gather(measure, value, -c(GEOID:year, geometry)) %>% 
+  ggplot(aes(fill = value)) +
+  geom_sf() +
+  scale_fill_viridis_c() +
+  facet_wrap(~measure)
+```
+
+```{r}
+df_test %>% 
+  ggplot(aes(fill = dispensation_count)) +
+  geom_sf() +
+  scale_fill_viridis_c()
+
+df_test %>% 
+  ggplot(aes(fill = incident_count)) +
+  geom_sf() +
+  scale_fill_viridis_c()
+
+df_test %>% 
+  ggplot(aes(fill = arrests)) +
+  geom_sf() +
+  scale_fill_viridis_c()
+
+df_test %>% 
+  ggplot(aes(fill = Fentanyl)) +
+  geom_sf() +
+  scale_fill_viridis_c()
+
+df_test %>% 
+  ggplot(aes(fill = Heroin)) +
+  geom_sf() +
+  scale_fill_viridis_c()
+
+df_test %>% 
+  ggplot(aes(fill = Opium)) +
+  geom_sf() +
+  scale_fill_viridis_c()
 
 
 ```
-
-
 
 
