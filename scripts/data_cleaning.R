@@ -20,6 +20,7 @@ read_csv("data/Opioid_Seizures_and_Arrests_Year_2013_-_June_2018_County_State_Po
 
 data_seizures_arrests %>% 
   mutate(time_period = factor(str_c(year, qtr, sep =" ")), 
-         county_name = str_c(str_to_title(county_name), " County")) -> df_seizures_arrests
+         county_name = str_c(str_to_title(county_name), " County"),
+         county_name = str_replace(county_name, "Mckean", "McKean")) -> df_seizures_arrests
 
 
